@@ -1,0 +1,158 @@
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<style>
+			body {
+			overflow	: hidden;
+			padding		: 0;
+			margin		: 0;
+			background-color: #BBB;
+			width: 100%;
+			height: 100%;
+			display: block;
+			position: absolute;
+			top: -1px;
+			z-index: 1;
+			
+			}
+			#pseudobody {
+			width:100%;
+			height: 100%;
+			position: absolute;
+			top:0;
+			z-index: 2;
+			margin: 0;
+			padding:0;
+			overflow-y: auto;
+			}
+			#info {
+			position	: absolute;
+			top		: 0px;
+			width		: 100%;
+			padding		: 5px;
+			text-align	: center;
+			}
+			
+			}
+			#info a {
+			color		: #66F;
+			text-decoration	: none;
+			}
+			#container {
+			width		: 100%;
+			height		: 100%;
+			overflow	: hidden;
+			padding		: 0;
+			margin		: 0;
+			}
+			
+		</style>
+	</head>
+	<body onload="javascript:start();">
+		<div id="container"></div>
+		<div id="info">
+			<br/>
+			<h2> Flankerbot Remote</h2>
+			<span id="result"></span>
+			<br/>
+		</div> 
+		<script src="http://jeromeetienne.github.io/threex.keyboardstate/threex.keyboardstate.js"></script>
+		<script src="js/virtualjoystick.js"></script>
+		<script>
+			console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
+			
+			var keyboard = new THREEx.KeyboardState();
+			var joystick	= new VirtualJoystick({
+				container	: document.getElementById('container'),
+				mouseSupport	: true,
+				limitStickTravel: true,
+				stickRadius	: 100
+				
+			});
+			joystick.addEventListener('touchStart', function(){
+				console.log('down')
+			})
+			joystick.addEventListener('touchEnd', function(){
+				console.log('up')
+			})
+			
+			
+			//Websockets
+    		var websock;
+    		lastPackage = new Date();
+    		var isConnected = false;
+    		
+			function start() {
+				websock = new WebSocket('ws://' + window.location.hostname + '/ws');
+				websock.onopen = function(evt) { console.log('websock open'); };
+				websock.onclose = function(evt) { console.log('websock close'); };
+				websock.onerror = function(evt) { console.log(evt); };
+				websock.onmessage = function(evt) {
+					if (evt.data == "ping"){
+						lastPackage = new Date();
+					}
+				};
+				var lastX = 0;
+				var lastY = 0;
+    			
+    			setInterval(function(){
+    			    if (new Date()- lastPackage >= 200){
+						isConnected = false;
+					}
+    			    else{
+						isConnected = true;
+					}
+					
+				},100);
+    			
+    			setInterval(function(){
+					var joystickX = Math.round(joystick.deltaX());
+					var joystickY = Math.round(joystick.deltaY());
+					
+    				var outputEl	= document.getElementById('result');
+    				var socketStatus	= document.getElementById('info');
+    				
+    				outputEl.innerHTML	= '<b>Result:</b> '
+    				+ ' dx:'+joystickX
+    				+ ' dy:'+joystickY
+    				+ (joystick.right()	? ' right'	: '')
+    				+ (joystick.up()	? ' up'		: '')
+    				+ (joystick.left()	? ' left'	: '')
+    				+ (joystick.down()	? ' down' 	: '')	
+    				
+    				//Keyboard Logic
+    				if( keyboard.pressed("D") ){
+    					outputEl.innerHTML= 'D'
+					}
+    				if( keyboard.pressed("A") ){
+    					outputEl.innerHTML= 'A'		
+					}
+    				if( keyboard.pressed("W") ){
+    					outputEl.innerHTML= 'W'
+					}
+    				if( keyboard.pressed("S") ){
+    					outputEl.innerHTML= 'S'
+					}
+    				
+    				if(isConnected){
+						document.getElementById('info').style.color = 'green'
+						if(lastX !=joystickX || lastY != joystickY){
+							websock.send('XY'+','+joystickX+','+joystickY*-1);
+							lastX = joystickX;
+							lastY = joystickY;
+						}
+					}
+					else {
+						document.getElementById('info').style.color = 'red'
+					}
+					
+				}, 1/30 * 1000);
+			}
+			
+			
+		</script>
+	</body>
+</html>

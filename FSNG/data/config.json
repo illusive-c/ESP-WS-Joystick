@@ -1,0 +1,14 @@
+{
+	"ssid":"HodorDies",
+	"pass":"tesla1988",
+	"ip":[192,168,1,31],
+	"netmask":[255,255,255,0],
+	"gateway":[192,168,1,1],
+	"dns":[192,168,1,1],
+	"dhcp":1
+	,"ntp":"es.pool.ntp.org"
+	,"NTPperiod":5
+	,"timeZone":10
+	,"daylight":1
+	,"deviceName":"can"
+}

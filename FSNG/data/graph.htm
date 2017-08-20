@@ -36,7 +36,8 @@
             heap.add(res.heap);
             temp.add(res.analog);
             digi.add(res.gpio);
-            if(running) setTimeout(loadValues, reloadPeriod);
+            if(running) 
+              setTimeout(loadValues, reloadPeriod);
           } else running = false;
         }
       };

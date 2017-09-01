@@ -13,19 +13,18 @@
 #include <Hash.h>
 #include <Wire.h>
 
-//Gyro Test Vars
-byte error, MPU_6050_found, nunchuck_found, lowByte, highByte;
-int address;
-int nDevices;
-//end
 
-//TEST
+//Define stepper pins
+const int lDir = D7;
+const int rDir = D0;
+const int lStep = D6;
+const int rStep = D5
 
-// defines pins numbers
-const int stepPin = D6;
-const int dirPin = D7;
+//Define I2C pins for MPU6050
+const int scl D2;
+const int sda D1;
 
-//
+
 
 static void writeLED(bool);
 

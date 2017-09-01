@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<style>
+			body {
+			margin: 0;
+			}
+			
+			textarea { 
+			position:fixed;
+			top:0;
+			left:250px;
+			right:0;
+			bottom:0;
+			width: 80%;
+			}
+			
+			#container    {   
+			padding: 20px;
+			width: 90%;
+			height: 100%;
+			}
+			
+			}
+			
+		</style>
+	</head>
+    <body>
+		<div id="container">
+			<h2>Serial Monitor</h2>
+			<p><input type="checkbox" id="autoscroll" checked> Autoscroll Enabled</p>
+			<span id="result1"></span>
+			<textarea id= "result" class ="inner" name="Text1" cols="40" rows="1"></textarea>
+		</div>
+        <script>
+			var outputEl	= document.getElementById('result');
+			var asCheck	= document.getElementById('autoscroll');
+			outputEl.innerHTML	+= '<b>Result:</b> ';
+			
+			//Handle WS
+			websock = new WebSocket('ws://' + window.location.hostname + '/ws');
+			websock.onopen = function(evt) { console.log('websock open'); outputEl.innerHTML	+= "ws opened "};
+			websock.onclose = function(evt) { console.log('websock close'); };
+			websock.onerror = function(evt) { console.log(evt); };
+			websock.onmessage = function(evt) {
+				outputEl.innerHTML	+= evt.data + "\n";
+				
+				if (asCheck.checked){
+				    outputEl.scrollTop = outputEl.scrollHeight;
+				}
+			};
+			
+			
+			setInterval(function(){
+				
+				
+				
+			},10);
+		</script>
+	</body>
+    
+</html>
